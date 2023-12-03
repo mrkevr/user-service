@@ -20,7 +20,10 @@ public class FileService {
 
 	public String uploadImageFileToDirectory(String username, MultipartFile file) throws IOException {
 		
-		if (file.isEmpty() || !file.getOriginalFilename().endsWith(".png") || !file.getOriginalFilename().endsWith(".jpg")) {
+		if (file.isEmpty() || (!file.getOriginalFilename().endsWith(".png") && !file.getOriginalFilename().endsWith(".jpg"))) {
+	
+			System.out.println("HEREEE");
+		
 			throw new InvalidFileFormatException("Please upload a valid image file(.png, .jpg)");
 		}
 		

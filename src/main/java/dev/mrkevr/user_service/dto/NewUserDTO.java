@@ -1,5 +1,7 @@
 package dev.mrkevr.user_service.dto;
 
+import dev.mrkevr.user_service.validator.UniqueEmail;
+import dev.mrkevr.user_service.validator.UniqueUsername;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -15,10 +17,12 @@ public class NewUserDTO {
 
 	@NotEmpty
 	@Pattern(regexp = "^(?=.{6,24}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$", message = "Invalid username format")
+	@UniqueUsername
 	String username;
 
 	@NotBlank
 	@Email(message = "Invalid email format")
+	@UniqueEmail
 	String email;
 
 	@NotEmpty

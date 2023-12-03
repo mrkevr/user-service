@@ -2,9 +2,11 @@ package dev.mrkevr.user_service.service;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
 
 import dev.mrkevr.user_service.dto.NewUserDTO;
@@ -12,6 +14,8 @@ import dev.mrkevr.user_service.entity.ImageFile;
 import dev.mrkevr.user_service.entity.User;
 import dev.mrkevr.user_service.exception.UserNotFoundException;
 import dev.mrkevr.user_service.repository.UserRepository;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -20,6 +24,7 @@ public class UserService {
 
 	private final UserRepository userRepository;
 	private final FileService fileService;
+	private final Validator validator;
 	
 	public List<User> getAll() {
 		return userRepository.findAll();
@@ -40,7 +45,13 @@ public class UserService {
 				.orElseThrow(() -> new UserNotFoundException("Could not found user with that email"));
 	}
 
-	public User addUser(NewUserDTO newUserDTO, MultipartFile newImageFile) {
+	public User addUser(@Validated NewUserDTO newUserDTO, MultipartFile newImageFile) {
+		
+		Set<ConstraintViolation<NewUserDTO>> violations = validator.validate(newUserDTO);
+		
+		violations.forEach(e -> System.out.println(e.getMessage()));
+		
+		
 		User user = User.builder()
 			.username(newUserDTO.getUsername())
 			.password(UUID.randomUUID().toString().substring(0, 6))
