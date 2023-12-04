@@ -1,9 +1,12 @@
 package dev.mrkevr.user_service.controller;
 
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import dev.mrkevr.user_service.dto.NewUserDTO;
+import dev.mrkevr.user_service.dto.ResponseEntityBody;
 import dev.mrkevr.user_service.entity.User;
 import dev.mrkevr.user_service.service.UserService;
 import dev.mrkevr.user_service.validator.ValidImageFile;
@@ -48,12 +52,18 @@ public class UserController {
 			@Valid @RequestPart NewUserDTO dto,
 			@ValidImageFile @RequestParam(name = "imageFile", required = true) MultipartFile imageFile) {
 		
-		System.out.println(dto);
-		System.out.println(imageFile.isEmpty());
-		
 		User savedUser = userService.addUser(dto, imageFile);
 		String uri = "/api/users/" + savedUser.getId();
+		String message = "User is successfully created";
+		Map<String, Object> properties = Map.of("uri", uri, "message", message);
 		
-		return ResponseEntity.created(URI.create(uri)).build();
+		ResponseEntityBody body = ResponseEntityBody.builder()
+			.title(HttpStatus.CREATED.toString())
+			.status(HttpStatus.CREATED.value())
+			.timeStamp(LocalDateTime.now())
+			.properties(properties)
+			.build();
+		
+		return ResponseEntity.created(URI.create(uri)).body(body);
 	}
 }

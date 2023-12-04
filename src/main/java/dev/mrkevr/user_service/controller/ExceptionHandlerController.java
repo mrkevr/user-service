@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import dev.mrkevr.user_service.exception.InvalidFileException;
+
 @RestControllerAdvice
 public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
 //	
@@ -39,5 +41,23 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
 		return ResponseEntity.badRequest().body(problemDetail);
 	}
 	
+	@ExceptionHandler(InvalidFileException.class)
+	public ResponseEntity<Object> handleInvalidFile(InvalidFileException ex) {
+		
+		ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+		problemDetail.setProperty("errors", ex.getMessage());
+		
+		return ResponseEntity.badRequest().body(problemDetail);
+	}
 	
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<Object> handleException(Exception ex) {
+		
+		System.out.println(ex.getClass().getSimpleName());
+		
+		ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+		problemDetail.setProperty("errors", ex.getMessage());
+			
+		return ResponseEntity.badRequest().body(problemDetail);
+	}
 }

@@ -22,5 +22,4 @@ public class ApplicationConfig {
 			System.out.println(userRepository.existsByUsername("thomashelbyy"));
 		};
 	}
-
 }

@@ -1,10 +1,10 @@
 package dev.mrkevr.user_service.exception;
 
-public class InvalidFileFormatException extends RuntimeException {
+public class InvalidFileException extends RuntimeException {
 
 	private static final long serialVersionUID = -8261382322632283L;
 
-	public InvalidFileFormatException(String message) {
+	public InvalidFileException(String message) {
 		super(message);
 	}
 }
