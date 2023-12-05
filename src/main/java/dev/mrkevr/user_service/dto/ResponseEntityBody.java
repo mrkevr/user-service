@@ -1,7 +1,6 @@
 package dev.mrkevr.user_service.dto;
 
 import java.time.LocalDateTime;
-import java.util.Map;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -19,5 +18,5 @@ public class ResponseEntityBody {
 
 	LocalDateTime timeStamp;
 
-	Map<String, Object> properties;
+	String message;
 }

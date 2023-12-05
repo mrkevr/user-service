@@ -5,6 +5,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.springframework.http.MediaType;
+
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
@@ -13,9 +15,17 @@ import jakarta.validation.Payload;
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER })
 public @interface ValidImageFile {
 
-	public String message() default "Please upload a valid image file(.png .jpeg)";
+	String[] value() default { MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE };
 
-	public Class<?>[] groups() default {};
+	int width() default 150;
 
-	public Class<? extends Payload>[] payload() default {};
+	int height() default 150;
+
+	long size() default 50_000L;
+
+	String message() default "Please upload a valid image file(png/jpg, 50kb or less, 150x150px)";
+
+	Class<?>[] groups() default {};
+
+	Class<? extends Payload>[] payload() default {};
 }

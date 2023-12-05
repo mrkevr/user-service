@@ -1,5 +1,6 @@
 package dev.mrkevr.user_service.controller;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,49 +16,51 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import dev.mrkevr.user_service.exception.InvalidFileException;
+import dev.mrkevr.user_service.exception.UserNotFoundException;
+import jakarta.validation.ValidationException;
 
 @RestControllerAdvice
 public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
-//	
-//	@ExceptionHandler(MethodArgumentNotValidException.class)
-//    ProblemDetail handleNotFoundException(MethodArgumentNotValidException e) {
-//		
-//		List<String> errors = e.getAllErrors().stream().map(x -> x.getDefaultMessage()).collect(Collectors.toList());
-//		
-//		ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
-//		problemDetail.setProperty("errors", errors);
-//		
-//        return problemDetail;
-//    }
 
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
 			HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-		
-		List<String> errors = ex.getAllErrors().stream().map(e -> e.getDefaultMessage()).collect(Collectors.toList());		
+
+		List<String> errors = ex.getAllErrors().stream().map(e -> e.getDefaultMessage()).collect(Collectors.toList());
 		ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
 		problemDetail.setProperty("errors", errors);
-		
-		return ResponseEntity.badRequest().body(problemDetail);
+		problemDetail.setProperty("timeStamp", LocalDateTime.now());
+		return ResponseEntity.of(problemDetail).build();
 	}
-	
+
 	@ExceptionHandler(InvalidFileException.class)
 	public ResponseEntity<Object> handleInvalidFile(InvalidFileException ex) {
-		
-		ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
-		problemDetail.setProperty("errors", ex.getMessage());
-		
-		return ResponseEntity.badRequest().body(problemDetail);
+		ProblemDetail problemDetail = createProblemDetail(ex, HttpStatus.BAD_REQUEST);
+		return ResponseEntity.of(problemDetail).build();
+	}
+	
+	@ExceptionHandler(ValidationException.class)
+	public ResponseEntity<Object> handleValidationException(ValidationException ex) {
+		ProblemDetail problemDetail = createProblemDetail(ex, HttpStatus.BAD_REQUEST);
+		return ResponseEntity.of(problemDetail).build();
+	}
+	
+	@ExceptionHandler(UserNotFoundException.class)
+	public ResponseEntity<Object> handleUserNotFound(UserNotFoundException ex) {
+		ProblemDetail problemDetail = createProblemDetail(ex, HttpStatus.NOT_FOUND);
+		return ResponseEntity.of(problemDetail).build();
 	}
 	
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<Object> handleException(Exception ex) {
-		
-		System.out.println(ex.getClass().getSimpleName());
-		
-		ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+		ProblemDetail problemDetail = createProblemDetail(ex, HttpStatus.BAD_REQUEST);
+		return ResponseEntity.of(problemDetail).build();
+	}
+	
+	private ProblemDetail createProblemDetail(Exception ex, HttpStatus status) {
+		ProblemDetail problemDetail = ProblemDetail.forStatus(status);
 		problemDetail.setProperty("errors", ex.getMessage());
-			
-		return ResponseEntity.badRequest().body(problemDetail);
+		problemDetail.setProperty("timeStamp", LocalDateTime.now());
+		return problemDetail;
 	}
 }

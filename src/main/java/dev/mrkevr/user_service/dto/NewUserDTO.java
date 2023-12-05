@@ -15,21 +15,21 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class NewUserDTO {
 
-	@NotEmpty
+	@NotEmpty(message = "Field `username` must not be empty")
 	@Pattern(regexp = "^(?=.{6,24}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$", message = "Invalid username format")
 	@UniqueUsername
 	String username;
 
-	@NotBlank
+	@NotBlank(message = "Field `email` must not be blank")
 	@Email(message = "Invalid email format")
 	@UniqueEmail
 	String email;
 
-	@NotEmpty
+	@NotEmpty(message = "Field `fullName` must not be empty")
 	@Size(min = 6, max = 100, message = "Full name must be 6-100 chatacters")
 	String fullName;
 
-	@NotEmpty
+	@NotEmpty(message = "Field `about` must not be empty")
 	@Size(min = 24, max = 300, message = "About must be 24-300 chatacters")
 	String about;
 
