@@ -1,6 +1,6 @@
 package dev.mrkevr.user_service.mapper;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
@@ -31,7 +31,7 @@ public class UserMapper implements ObjectMapper<User, UserResponse>{
 	}
 
 	@Override
-	public Collection<UserResponse> map(Collection<User> target) {
+	public List<UserResponse> map(List<User> target) {
 		return target.stream()
 				.map(user -> map(user))
 				.collect(Collectors.toList());

@@ -3,8 +3,9 @@ package dev.mrkevr.user_service.service;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,10 +28,10 @@ public class UserService {
 	private final FileService fileService;
 	private final UserMapper userMapper;
 	
-	public List<UserResponse> getAll() {
-		return userRepository.findAll().stream()
-				.map(user -> userMapper.map(user))
-				.collect(Collectors.toList());
+	public List<UserResponse> getAll(int page, int size) {
+		PageRequest pageRequest = PageRequest.of(page, size);
+		Page<User> users = userRepository.findAll(pageRequest);
+		return userMapper.map(users.getContent());
 	}
 	
 	public UserResponse getById(UUID id) {
@@ -62,18 +63,13 @@ public class UserService {
 			.about(newUserDTO.getAbout())
 			.build();
 		
-		String filePath = this.saveImageToDirectory(newUserDTO.getUsername(), newImageFile);
-		
-		ImageFile imageFile = ImageFile.builder()
-				.user(user)
-				.filePath(filePath)
-				.build();
-		
+		String filePath = this.saveImageToDirectory(newUserDTO.getUsername(), newImageFile);	
+		ImageFile imageFile = new ImageFile(user, filePath);
 		user.setImageFile(imageFile);
 		
 		// Persist
 		User savedUser = userRepository.save(user);
-		return userMapper.map(user);
+		return userMapper.map(savedUser);
 	}
 	
 	// Save the image to directory and return the file path

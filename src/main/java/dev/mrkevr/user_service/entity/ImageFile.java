@@ -35,4 +35,9 @@ public class ImageFile {
 
 	@Column(name = "file_path")
 	String filePath;
+
+	public ImageFile(User user, String filePath) {
+		this.user = user;
+		this.filePath = filePath;
+	}
 }

@@ -37,8 +37,10 @@ public class UserController {
 	UserService userService;
 
 	@GetMapping
-	ResponseEntity<List<UserResponse>> getAll() {
-		List<UserResponse> userResponses = userService.getAll();
+	ResponseEntity<List<UserResponse>> getAll(
+			@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "1000") int size) {
+		List<UserResponse> userResponses = userService.getAll(page, size);
 		return ResponseEntity.ok(userResponses);
 	}
 
