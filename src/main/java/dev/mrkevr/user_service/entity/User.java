@@ -31,6 +31,7 @@ public class User {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
+	@Column(name = "user_id", updatable = false)
 	UUID id;
 
 	@Column(name = "username")
@@ -46,7 +47,7 @@ public class User {
 	String fullName;
 	
 	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "image_file_id", referencedColumnName = "id")
+	@JoinColumn(name = "image_file_id", referencedColumnName = "image_file_id")
 	ImageFile imageFile;
 
 	@Column(name = "about")

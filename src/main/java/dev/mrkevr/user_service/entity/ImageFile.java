@@ -27,13 +27,11 @@ public class ImageFile {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
+	@Column(name = "image_file_id", updatable = false)
 	UUID id;
 
 	@OneToOne(mappedBy = "imageFile")
 	User user;
-
-	@Column(name = "type")
-	String type;
 
 	@Column(name = "file_path")
 	String filePath;

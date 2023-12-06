@@ -19,8 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import dev.mrkevr.user_service.dto.NewUserDTO;
 import dev.mrkevr.user_service.dto.ResponseEntityBody;
-import dev.mrkevr.user_service.dto.UserView;
-import dev.mrkevr.user_service.entity.User;
+import dev.mrkevr.user_service.dto.UserResponse;
 import dev.mrkevr.user_service.service.UserService;
 import dev.mrkevr.user_service.validator.ValidImageFile;
 import jakarta.validation.Valid;
@@ -38,15 +37,15 @@ public class UserController {
 	UserService userService;
 
 	@GetMapping
-	ResponseEntity<List<UserView>> getAll() {
-		List<UserView> users = userService.getAll();
-		return ResponseEntity.ok(users);
+	ResponseEntity<List<UserResponse>> getAll() {
+		List<UserResponse> userResponses = userService.getAll();
+		return ResponseEntity.ok(userResponses);
 	}
 
 	@GetMapping("/{id}")
-	ResponseEntity<UserView> getByID(@PathVariable UUID id) {
-		UserView user = userService.getById(id);
-		return ResponseEntity.ok(user);
+	ResponseEntity<UserResponse> getByID(@PathVariable UUID id) {
+		UserResponse userResponse = userService.getById(id);
+		return ResponseEntity.ok(userResponse);
 	}
 
 	@PostMapping
@@ -54,8 +53,8 @@ public class UserController {
 			@Valid @RequestPart NewUserDTO user,
 			@Valid @ValidImageFile @RequestParam(name = "imageFile", required = true) MultipartFile imageFile) {
 		
-		User savedUser = userService.addUser(user, imageFile);
-		String uri = "/api/users/" + savedUser.getId();
+		UserResponse userResponse = userService.addUser(user, imageFile);
+		String uri = "/api/users/" + userResponse.getId();
 		String message = "User is successfully created";
 		
 		ResponseEntityBody body = ResponseEntityBody.builder()

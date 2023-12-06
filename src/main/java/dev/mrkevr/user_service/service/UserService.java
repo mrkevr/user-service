@@ -3,16 +3,18 @@ package dev.mrkevr.user_service.service;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import dev.mrkevr.user_service.dto.NewUserDTO;
-import dev.mrkevr.user_service.dto.UserView;
+import dev.mrkevr.user_service.dto.UserResponse;
 import dev.mrkevr.user_service.entity.ImageFile;
 import dev.mrkevr.user_service.entity.User;
 import dev.mrkevr.user_service.exception.UserNotFoundException;
+import dev.mrkevr.user_service.mapper.UserMapper;
 import dev.mrkevr.user_service.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -23,28 +25,34 @@ public class UserService {
 
 	private final UserRepository userRepository;
 	private final FileService fileService;
+	private final UserMapper userMapper;
 	
-	public List<UserView> getAll() {
-		return userRepository.findAllUserView();
+	public List<UserResponse> getAll() {
+		return userRepository.findAll().stream()
+				.map(user -> userMapper.map(user))
+				.collect(Collectors.toList());
 	}
 	
-	public UserView getById(UUID id) {
-		return userRepository.findUserViewById(id)
+	public UserResponse getById(UUID id) {
+		 User user = userRepository.findById(id)
 				.orElseThrow(() -> new UserNotFoundException("Could not found user with that id"));
+		 return userMapper.map(user);
 	}
 
-	public UserView getByUsername(String username) {
-		return userRepository.findUserViewByUsername(username)
+	public UserResponse getByUsername(String username) {
+		 User user = userRepository.findByUsername(username)
 				.orElseThrow(() -> new UserNotFoundException("Could not found user with that username"));
+		 return userMapper.map(user);
 	}
 
-	public UserView getByEmail(String email) {
-		return userRepository.findUserViewByUsername(email)
+	public UserResponse getByEmail(String email) {
+		 User user = userRepository.findByEmail(email)
 				.orElseThrow(() -> new UserNotFoundException("Could not found user with that email"));
+		 return userMapper.map(user);
 	}
 	
 	@Transactional
-	public User addUser(NewUserDTO newUserDTO, MultipartFile newImageFile) {
+	public UserResponse addUser(NewUserDTO newUserDTO, MultipartFile newImageFile) {
 		
 		User user = User.builder()
 			.username(newUserDTO.getUsername())
@@ -58,7 +66,6 @@ public class UserService {
 		
 		ImageFile imageFile = ImageFile.builder()
 				.user(user)
-				.type("photo")
 				.filePath(filePath)
 				.build();
 		
@@ -66,7 +73,7 @@ public class UserService {
 		
 		// Persist
 		User savedUser = userRepository.save(user);
-		return savedUser;
+		return userMapper.map(user);
 	}
 	
 	// Save the image to directory and return the file path
